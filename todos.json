@@ -1,22 +1,22 @@
 [
   {
     "date": "2025-09-27T12:59:25.021381083Z",
-    "text": "update the todo list",
+    "text": "the todo list almost done",
     "done": true
   },
   {
     "date": "2025-09-28T06:44:37.569758800Z",
-    "text": "do lap 1 microsystem",
+    "text": "thank you for using my code ",
     "done": false
   },
   {
     "date": "2025-09-28T06:44:52.111935100Z",
-    "text": "do lap 2 microsystem",
+    "text": "you can test first before installing it",
     "done": false
   },
   {
     "date": "2025-09-28T06:45:15.716595900Z",
-    "text": "tcp application",
+    "text": "read README for more detail",
     "done": false
   }
 ]
