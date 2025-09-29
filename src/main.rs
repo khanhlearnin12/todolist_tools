@@ -150,7 +150,6 @@ fn main(){
         print!(">");
         io::stdout().flush().unwrap();
 
-
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("failed to read line");
         let part: Vec<&str> = input.trim().splitn(2, ' ').collect();
@@ -183,7 +182,10 @@ fn main(){
                 }
             }
             "rm" => {
-                if part.len() > 1{ //
+                if part.len() == 2 && part[1] == "all" {
+                    todos.clear();
+                    println!("Clean...The list is empty");  
+                } else if part.len() > 1{ 
                     if let Ok(index) = part[1].parse::<usize>(){
                         remove_task(&mut todos, index);
                     } else {
@@ -194,7 +196,10 @@ fn main(){
                 }
             }
             "remove" => {
-                if part.len() > 1{ //
+                if part.len() == 2 && part[1] == "all" {
+                    todos.clear();
+                    println!("Clean...the list is empty");
+                }else if part.len() > 1{ 
                     if let Ok(index) = part[1].parse::<usize>(){
                         remove_task(&mut todos, index);
                     } else {
