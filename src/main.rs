@@ -1,12 +1,13 @@
+use std::process::{Command, Stdio};
+use std::io::{BufReader, BufRead};
 use std::{fs, io, path::Path};
 use std::io::Write;
 use chrono::{DateTime,Utc};
-//use chrono_tz::Asia::Taipei;
+
 use clearscreen;
 use serde::{Deserialize, Serialize};
-//libray to process the struct
-//derive ma hoa user duoi dang don gian nhat
-//tao struct de su ly chuooi nhap
+
+
 #[derive(Debug, Serialize, Deserialize)]
 struct ToDo {
     date: DateTime<Utc>,
@@ -70,7 +71,7 @@ fn list_todos(todos: &Vec<ToDo>){
     }
 }
 
-//what is this part do ??
+
 fn save_task(todos: &mut Vec<ToDo>,path: &Path) -> io::Result<()>{
     let json_data = serde_json::to_string_pretty(todos)?;
     fs::write(path, json_data)?;
@@ -87,6 +88,55 @@ fn load_todos(path: &Path) -> io::Result<Vec<ToDo>>{
     }
 }
 
+fn run_install(){
+    let mut outputz = Command::new("cargo")
+        .arg("install")
+        .arg("--path")
+        .arg(".")
+        .stdout(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("Failed to excute to 'cargo install' command.");
+    
+    // Capture stdout and stderr
+    let stdout = outputz.stdout.take().unwrap();
+    let stderr = outputz.stderr.take().unwrap();
+
+    // Use BufReader for efficient line-by-line reading
+    let mut reader_stdout = BufReader::new(stdout);
+    let mut reader_stderr = BufReader::new(stderr);
+
+    // Read and print output from both streams
+    let mut stdout_line = String::new();
+    let mut stderr_line = String::new();
+    loop {
+        let stdout_read = reader_stdout.read_line(&mut stdout_line).unwrap_or(0);
+        let stderr_read = reader_stderr.read_line(&mut stderr_line).unwrap_or(0);
+        
+        if stdout_read == 0 && stderr_read == 0 {
+            break;
+        }
+
+        if stdout_read > 0 {
+            print!("{}", stdout_line);
+            stdout_line.clear();
+        }
+        if stderr_read > 0 {
+            eprint!("{}", stderr_line);
+            stderr_line.clear();
+        }
+    }
+
+    let status = outputz.wait()
+        .expect("failed to wait child process");
+
+    if status.success(){
+        println!("Application install successfully");
+    }else {
+        eprintln!("Installation failed. Error. Check to message above");
+    }
+}
+
 fn main(){
     let todo_file_path ="todos.json";
     let mut todos = load_todos(Path::new(todo_file_path))
@@ -96,7 +146,7 @@ fn main(){
     });
 
     loop{
-        println!("\nCommands: add, list(ls), done, remove(rm), edit, save(sv), quit, clear");
+        println!("\nCommands: add, list(ls), done, remove(rm), edit, save(sv), quit, clear ,install");
         print!(">");
         io::stdout().flush().unwrap();
 
@@ -191,6 +241,10 @@ fn main(){
             "clear" => {
                 clearscreen::clear().expect("Fail to clear screen");
                 println!("Screen cleared.");
+            }
+            "install" => {
+                run_install();
+                println!("program installing...")
             }
             _ => {
                 println!("Unknown Command!");
